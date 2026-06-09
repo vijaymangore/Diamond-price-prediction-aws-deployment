@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  diamond-app:
+    build:
+      context: .                 # Looks at the root folder for our unified Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"              # Exposes your Frontend UI to your browser
+      - "8000:8000"              # Exposes your Backend API for testing
+    volumes:
+      - ./artifacts:/app/artifacts  # Mounts your local ML model folder into the container
+    environment:
+      - MODEL_PATH=/app/artifacts/diamond_pipeline.pkl

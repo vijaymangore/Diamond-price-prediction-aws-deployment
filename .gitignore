@@ -1,0 +1,16 @@
+# Secret environment variables (CRITICAL)
+.env
+.env.local
+.env.production
+
+# Local python environment data
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# IDE configs
+.vscode/
+.idea/
+artifacts/diamond_pipeline.pkl
+data/
