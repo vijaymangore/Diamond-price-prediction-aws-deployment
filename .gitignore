@@ -12,5 +12,4 @@ __pycache__/
 # IDE configs
 .vscode/
 .idea/
-artifacts/diamond_pipeline.pkl
 data/
