@@ -4,16 +4,46 @@ import zipfile
 import pandas as pd
 import numpy as np
 import joblib
+import boto3
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 
+def download_model_from_s3(output_dir, file_name="diamond_pipeline.pkl"):
+    """
+    Attempts to download the pre-trained model artifact from the Mumbai S3 bucket.
+    """
+    bucket_name = "diamond-price-prediction-models-vijay"  # <--- REPLACE THIS WITH YOUR ACTUAL BUCKET NAME
+    local_path = os.path.join(output_dir, file_name)
+    
+    if os.path.exists(local_path):
+        print(f"[INFO] Found local operational pipeline artifact at: {local_path}")
+        return True
+
+    print(f"[INFO] Artifact not found locally. Attempting retrieval from S3 bucket: {bucket_name}...")
+    try:
+        # Explicitly configuring client connection to the Mumbai region
+        s3 = boto3.client('s3', region_name='ap-south-1')
+        s3.download_file(bucket_name, file_name, local_path)
+        print(f"[SUCCESS] Model artifact successfully pulled from S3 and cached at: {local_path}")
+        return True
+    except Exception as e:
+        print(f"[WARNING] S3 download sequence failed: {e}")
+        print("[INFO] Defaulting fallback configuration to complete local training architecture...")
+        return False
+
 def run_training_pipeline(zip_path, output_dir="../artifacts"):
     print("[INFO] Initiating Automated Machine Learning Training Pipeline...")
     os.makedirs(output_dir, exist_ok=True)
     
+    # Try fetching the model from S3 to save system compilation and build times
+    s3_success = download_model_from_s3(output_dir)
+    if s3_success:
+        print("[INFO] Production model pipeline ready for operational backend consumption.")
+        return
+
     # 1. Automated Data Ingestion Layer from ZIP
     if not os.path.exists(zip_path):
         raise FileNotFoundError(f"Missing resource dataset at path: {zip_path}")

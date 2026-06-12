@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy all core application directories and pipeline weights into the workspace
 COPY ./backend ./backend
 COPY ./frontend ./frontend
-COPY ./artifacts ./artifacts
+RUN mkdir -p /app/artifacts
 
 # Expose both ports (8000 for backend API, 8501 for Frontend UI)
 EXPOSE 8000
