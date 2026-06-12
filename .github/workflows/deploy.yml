@@ -1,15 +1,13 @@
-YAML
-name: Deploy Unified Diamond App to AWS ECR
+name: Deploy Unified Diamond App
 
 on:
   push:
     branches:
-      - main  # Triggers the build whenever you commit to the main branch
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -31,6 +29,5 @@ jobs:
         ECR_REPOSITORY: diamond_unified_app
         IMAGE_TAG: latest
       run: |
-        # Builds using the root Dockerfile visible in your repo
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
